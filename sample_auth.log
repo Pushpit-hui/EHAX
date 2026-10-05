@@ -1,0 +1,39 @@
+Sep 29 10:01:02 server sshd[1234]: Failed password for root from 192.168.1.10 port 52341 ssh2
+Sep 29 10:01:15 server sshd[1235]: Failed password for root from 192.168.1.10 port 52342 ssh2
+Sep 29 10:01:28 server sshd[1236]: Failed password for root from 192.168.1.10 port 52343 ssh2
+Sep 29 10:02:15 server sshd[5678]: Accepted password for alice from 192.168.1.20 port 42000 ssh2
+Sep 29 10:03:30 server sshd[9012]: Accepted publickey for bob from 192.168.1.30 port 45000 ssh2
+Sep 29 10:04:00 server sshd[1111]: Failed password for invalid user admin from 192.168.1.40 port 50000 ssh2
+Sep 29 10:04:15 server sshd[1112]: Failed password for invalid user admin from 192.168.1.40 port 50001 ssh2
+Sep 29 10:05:00 server sudo: alice : TTY=pts/0 ; PWD=/home/alice ; USER=root ; COMMAND=/usr/bin/apt update
+Sep 29 10:06:00 server sshd[2222]: pam_unix(sshd:session): session opened for user alice(uid=1000) by (uid=0)
+Sep 29 10:07:00 server sshd[2222]: pam_unix(sshd:session): session closed for user alice
+this is garbage
+Sep 29 10:08:00 server random garbage line
+Sep 29 10:09:00 server sshd[3333]: Failed password for bob from 192.168.1.20 port 51000 ssh2
+Sep 29 10:10:00 server sshd[3334]: Accepted password for alice from 192.168.1.20 port 51001 ssh2
+Sep 29 10:11:00 server sudo: bob : TTY=pts/1 ; PWD=/home/bob ; USER=root ; COMMAND=/usr/bin/systemctl restart nginx
+Sep 29 10:12:00 server sshd[4444]: pam_unix(sshd:session): session opened for user bob(uid=1001) by (uid=0)
+Sep 29 10:13:00 server sshd[4444]: pam_unix(sshd:session): session closed for user bob
+Sep 29 10:14:00 server sshd[5555]: Failed password for root from 192.168.1.10 port 52000 ssh2
+Sep 29 10:15:00 server sshd[6666]: Accepted publickey for charlie from 192.168.1.50 port 53000 ssh2
+Oct  5 10:00:01 my-server sshd[1001]: Accepted password for alice from 192.168.1.10 port 52341 ssh2
+Oct  5 10:00:01 my-server sshd[1001]: pam_unix(sshd:session): session opened for user alice(uid=1000) by (uid=0)
+Oct  5 10:02:10 my-server sudo:    alice : TTY=pts/0 ; PWD=/home/alice ; USER=root ; COMMAND=/usr/bin/apt update
+this line is garbage and should be ignored
+Oct 99 99:99:99 my-server sshd[1]: Failed password for root from 1.2.3.4 port 22 ssh2
+Oct  5 10:05:00 my-server sshd[1001]: pam_unix(sshd:session): session closed for user alice
+Oct  5 10:08:00 my-server sshd[1100]: Failed password for bob from 198.51.100.7 port 41000 ssh2
+Oct  5 10:08:20 my-server sshd[1101]: Failed password for bob from 198.51.100.7 port 41001 ssh2
+Oct  5 10:08:40 my-server sshd[1102]: Accepted publickey for bob from 198.51.100.7 port 41002 ssh2
+Oct  5 10:10:01 my-server sshd[2001]: Failed password for root from 203.0.113.50 port 40001 ssh2
+Oct  5 10:10:02 my-server sshd[2002]: Failed password for invalid user admin from 203.0.113.50 port 40002 ssh2
+Oct  5 10:10:03 my-server sshd[2003]: Failed password for invalid user test from 203.0.113.50 port 40003 ssh2
+Oct  5 10:10:04 my-server sshd[2004]: Failed password for invalid user oracle from 203.0.113.50 port 40004 ssh2
+Oct  5 10:10:05 my-server sshd[2005]: Failed password for ubuntu from 203.0.113.50 port 40005 ssh2
+Oct  5 10:10:06 my-server sshd[2006]: Failed password for root from 203.0.113.50 port 40006 ssh2
+Oct  5 10:10:07 my-server sshd[2007]: Failed password for invalid user postgres from 203.0.113.50 port 40007 ssh2
+Oct  5 10:10:08 my-server sshd[2008]: Failed password for root from 203.0.113.50 port 40008 ssh2
+Oct  5 10:10:09 my-server sshd[2009]: Failed password for invalid user admin from 203.0.113.50 port 40009 ssh2
+Oct  5 10:10:10 my-server sshd[2010]: Failed password for invalid user deploy from 203.0.113.50 port 40010 ssh2
+Oct  5 10:11:00 my-server sshd[2011]: Accepted password for alice from 203.0.113.50 port 40011 ssh2

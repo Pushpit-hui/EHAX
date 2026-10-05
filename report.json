@@ -1,0 +1,392 @@
+{
+    "summary": {
+        "total_events": 35,
+        "total_login_attempts": 26,
+        "successful_logins": 7,
+        "failed_logins": 19,
+        "session_events": 6,
+        "sudo_commands": 3,
+        "top_usernames": {
+            "root": 7,
+            "bob": 5,
+            "alice": 4,
+            "admin": 4,
+            "charlie": 1
+        },
+        "top_ips": {
+            "203.0.113.50": 11,
+            "192.168.1.10": 5,
+            "192.168.1.20": 3,
+            "198.51.100.7": 3,
+            "192.168.1.40": 2
+        }
+    },
+    "security_report": {
+        "192.168.1.40": {
+            "score": 2,
+            "level": "NORMAL",
+            "reasons": [
+                "Repeated invalid usernames: 2 attempts"
+            ]
+        },
+        "203.0.113.50": {
+            "score": 9,
+            "level": "HIGH SUSPICION",
+            "reasons": [
+                "Burst failures: 8+ failures within 60 seconds",
+                "Persistent failures: 10+ failures within 15 minutes",
+                "Many usernames targeted: 7 different users",
+                "Repeated invalid usernames: 6 attempts"
+            ]
+        }
+    },
+    "events": [
+        {
+            "timestamp": "Sep 29 10:01:02",
+            "ip": "192.168.1.10",
+            "user": "root",
+            "event_type": "ssh_login",
+            "status": "failure",
+            "pid": "1234",
+            "port": "52341",
+            "invalid_user": false
+        },
+        {
+            "timestamp": "Sep 29 10:01:15",
+            "ip": "192.168.1.10",
+            "user": "root",
+            "event_type": "ssh_login",
+            "status": "failure",
+            "pid": "1235",
+            "port": "52342",
+            "invalid_user": false
+        },
+        {
+            "timestamp": "Sep 29 10:01:28",
+            "ip": "192.168.1.10",
+            "user": "root",
+            "event_type": "ssh_login",
+            "status": "failure",
+            "pid": "1236",
+            "port": "52343",
+            "invalid_user": false
+        },
+        {
+            "timestamp": "Sep 29 10:02:15",
+            "ip": "192.168.1.20",
+            "user": "alice",
+            "event_type": "ssh_login",
+            "status": "success",
+            "pid": "5678",
+            "port": "42000",
+            "invalid_user": false
+        },
+        {
+            "timestamp": "Sep 29 10:03:30",
+            "ip": "192.168.1.30",
+            "user": "bob",
+            "event_type": "ssh_login",
+            "status": "success",
+            "pid": "9012",
+            "port": "45000",
+            "invalid_user": false
+        },
+        {
+            "timestamp": "Sep 29 10:04:00",
+            "ip": "192.168.1.40",
+            "user": "admin",
+            "event_type": "ssh_login",
+            "status": "failure",
+            "pid": "1111",
+            "port": "50000",
+            "invalid_user": true
+        },
+        {
+            "timestamp": "Sep 29 10:04:15",
+            "ip": "192.168.1.40",
+            "user": "admin",
+            "event_type": "ssh_login",
+            "status": "failure",
+            "pid": "1112",
+            "port": "50001",
+            "invalid_user": true
+        },
+        {
+            "timestamp": "Sep 29 10:05:00",
+            "ip": null,
+            "user": "alice",
+            "event_type": "sudo_command",
+            "status": null,
+            "pid": null,
+            "port": null,
+            "target_user": "root",
+            "command": "/usr/bin/apt update"
+        },
+        {
+            "timestamp": "Sep 29 10:06:00",
+            "ip": null,
+            "user": "alice",
+            "event_type": "session_open",
+            "status": null,
+            "pid": "2222",
+            "port": null
+        },
+        {
+            "timestamp": "Sep 29 10:07:00",
+            "ip": null,
+            "user": "alice",
+            "event_type": "session_close",
+            "status": null,
+            "pid": "2222",
+            "port": null
+        },
+        {
+            "timestamp": "Sep 29 10:09:00",
+            "ip": "192.168.1.20",
+            "user": "bob",
+            "event_type": "ssh_login",
+            "status": "failure",
+            "pid": "3333",
+            "port": "51000",
+            "invalid_user": false
+        },
+        {
+            "timestamp": "Sep 29 10:10:00",
+            "ip": "192.168.1.20",
+            "user": "alice",
+            "event_type": "ssh_login",
+            "status": "success",
+            "pid": "3334",
+            "port": "51001",
+            "invalid_user": false
+        },
+        {
+            "timestamp": "Sep 29 10:11:00",
+            "ip": null,
+            "user": "bob",
+            "event_type": "sudo_command",
+            "status": null,
+            "pid": null,
+            "port": null,
+            "target_user": "root",
+            "command": "/usr/bin/systemctl restart nginx"
+        },
+        {
+            "timestamp": "Sep 29 10:12:00",
+            "ip": null,
+            "user": "bob",
+            "event_type": "session_open",
+            "status": null,
+            "pid": "4444",
+            "port": null
+        },
+        {
+            "timestamp": "Sep 29 10:13:00",
+            "ip": null,
+            "user": "bob",
+            "event_type": "session_close",
+            "status": null,
+            "pid": "4444",
+            "port": null
+        },
+        {
+            "timestamp": "Sep 29 10:14:00",
+            "ip": "192.168.1.10",
+            "user": "root",
+            "event_type": "ssh_login",
+            "status": "failure",
+            "pid": "5555",
+            "port": "52000",
+            "invalid_user": false
+        },
+        {
+            "timestamp": "Sep 29 10:15:00",
+            "ip": "192.168.1.50",
+            "user": "charlie",
+            "event_type": "ssh_login",
+            "status": "success",
+            "pid": "6666",
+            "port": "53000",
+            "invalid_user": false
+        },
+        {
+            "timestamp": "Oct  5 10:00:01",
+            "ip": "192.168.1.10",
+            "user": "alice",
+            "event_type": "ssh_login",
+            "status": "success",
+            "pid": "1001",
+            "port": "52341",
+            "invalid_user": false
+        },
+        {
+            "timestamp": "Oct  5 10:00:01",
+            "ip": null,
+            "user": "alice",
+            "event_type": "session_open",
+            "status": null,
+            "pid": "1001",
+            "port": null
+        },
+        {
+            "timestamp": "Oct  5 10:02:10",
+            "ip": null,
+            "user": "alice",
+            "event_type": "sudo_command",
+            "status": null,
+            "pid": null,
+            "port": null,
+            "target_user": "root",
+            "command": "/usr/bin/apt update"
+        },
+        {
+            "timestamp": "Oct  5 10:05:00",
+            "ip": null,
+            "user": "alice",
+            "event_type": "session_close",
+            "status": null,
+            "pid": "1001",
+            "port": null
+        },
+        {
+            "timestamp": "Oct  5 10:08:00",
+            "ip": "198.51.100.7",
+            "user": "bob",
+            "event_type": "ssh_login",
+            "status": "failure",
+            "pid": "1100",
+            "port": "41000",
+            "invalid_user": false
+        },
+        {
+            "timestamp": "Oct  5 10:08:20",
+            "ip": "198.51.100.7",
+            "user": "bob",
+            "event_type": "ssh_login",
+            "status": "failure",
+            "pid": "1101",
+            "port": "41001",
+            "invalid_user": false
+        },
+        {
+            "timestamp": "Oct  5 10:08:40",
+            "ip": "198.51.100.7",
+            "user": "bob",
+            "event_type": "ssh_login",
+            "status": "success",
+            "pid": "1102",
+            "port": "41002",
+            "invalid_user": false
+        },
+        {
+            "timestamp": "Oct  5 10:10:01",
+            "ip": "203.0.113.50",
+            "user": "root",
+            "event_type": "ssh_login",
+            "status": "failure",
+            "pid": "2001",
+            "port": "40001",
+            "invalid_user": false
+        },
+        {
+            "timestamp": "Oct  5 10:10:02",
+            "ip": "203.0.113.50",
+            "user": "admin",
+            "event_type": "ssh_login",
+            "status": "failure",
+            "pid": "2002",
+            "port": "40002",
+            "invalid_user": true
+        },
+        {
+            "timestamp": "Oct  5 10:10:03",
+            "ip": "203.0.113.50",
+            "user": "test",
+            "event_type": "ssh_login",
+            "status": "failure",
+            "pid": "2003",
+            "port": "40003",
+            "invalid_user": true
+        },
+        {
+            "timestamp": "Oct  5 10:10:04",
+            "ip": "203.0.113.50",
+            "user": "oracle",
+            "event_type": "ssh_login",
+            "status": "failure",
+            "pid": "2004",
+            "port": "40004",
+            "invalid_user": true
+        },
+        {
+            "timestamp": "Oct  5 10:10:05",
+            "ip": "203.0.113.50",
+            "user": "ubuntu",
+            "event_type": "ssh_login",
+            "status": "failure",
+            "pid": "2005",
+            "port": "40005",
+            "invalid_user": false
+        },
+        {
+            "timestamp": "Oct  5 10:10:06",
+            "ip": "203.0.113.50",
+            "user": "root",
+            "event_type": "ssh_login",
+            "status": "failure",
+            "pid": "2006",
+            "port": "40006",
+            "invalid_user": false
+        },
+        {
+            "timestamp": "Oct  5 10:10:07",
+            "ip": "203.0.113.50",
+            "user": "postgres",
+            "event_type": "ssh_login",
+            "status": "failure",
+            "pid": "2007",
+            "port": "40007",
+            "invalid_user": true
+        },
+        {
+            "timestamp": "Oct  5 10:10:08",
+            "ip": "203.0.113.50",
+            "user": "root",
+            "event_type": "ssh_login",
+            "status": "failure",
+            "pid": "2008",
+            "port": "40008",
+            "invalid_user": false
+        },
+        {
+            "timestamp": "Oct  5 10:10:09",
+            "ip": "203.0.113.50",
+            "user": "admin",
+            "event_type": "ssh_login",
+            "status": "failure",
+            "pid": "2009",
+            "port": "40009",
+            "invalid_user": true
+        },
+        {
+            "timestamp": "Oct  5 10:10:10",
+            "ip": "203.0.113.50",
+            "user": "deploy",
+            "event_type": "ssh_login",
+            "status": "failure",
+            "pid": "2010",
+            "port": "40010",
+            "invalid_user": true
+        },
+        {
+            "timestamp": "Oct  5 10:11:00",
+            "ip": "203.0.113.50",
+            "user": "alice",
+            "event_type": "ssh_login",
+            "status": "success",
+            "pid": "2011",
+            "port": "40011",
+            "invalid_user": false
+        }
+    ]
+}
