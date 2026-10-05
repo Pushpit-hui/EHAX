@@ -7,3 +7,6 @@ rule no 1 = 8 failed login attempts within a minute
 rule no 2 = 10 failed login attempts within 15 minutes
 rule no 3 = same user 
 rule no 4 = invalid user trying to login again nd again for the same ip address
+
+then added scores for each rule , so that score will decide suspicion level 
+
