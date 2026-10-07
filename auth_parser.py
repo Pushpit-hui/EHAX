@@ -18,10 +18,7 @@ PERSISTENT_TIME = 15 * 60
 MANY_USERS_LIMIT = 5
 INVALID_USER_LIMIT = 2
 
-
-# =========================
 # REGEX PATTERNS
-# =========================
 
 login_pattern = (
     r"^(?P<timestamp>\w+\s+\d+\s+\d+:\d+:\d+) "
@@ -54,11 +51,7 @@ sudo_pattern = (
     r"COMMAND=(?P<command>.+)$"
 )
 
-
-# =========================
 # TIMESTAMP
-# =========================
-
 def parse_timestamp(timestamp):
     # Syslog timestamps have no year. strptime without a year defaults to
     # 1900 (not a leap year) and crashes on "Feb 29". Use a fixed leap year.
@@ -66,21 +59,13 @@ def parse_timestamp(timestamp):
         "2000 " + timestamp,
         "%Y %b %d %H:%M:%S"
     )
-
-
-# =========================
 # PARSE ONE LINE
-# =========================
-
 def _match_line(line):
 
     # -------- SSH LOGIN --------
 
-    login_match = re.search(
-        login_pattern,
-        line
-    )
-
+    login_match = re.search(login_pattern,line)
+    
     if login_match:
 
         if login_match.group("status") == "Accepted":
@@ -151,8 +136,7 @@ def _match_line(line):
         }
 
         return event
-
-
+        
     # Unknown / malformed line
 
     return None
@@ -174,20 +158,16 @@ def parse_line(line):
 
     return event
 
-
-# =========================
 # SECURITY THREAT DETECTION
-# =========================
+
 
 def detect_security_threats(login_events):
-
     # Get only failed login attempts
 
     failed_events = [
         event
         for event in login_events
-        if event["status"] == "failure"
-    ]
+        if event["status"] == "failure"]
 
 
     # Group all login events by IP
@@ -219,10 +199,8 @@ def detect_security_threats(login_events):
 
         events_by_ip[ip].sort(
             key=lambda event: parse_timestamp(
-                event["timestamp"]
-            )
+                event["timestamp"])
         )
-
 
     for ip in failed_by_ip:
 
@@ -248,11 +226,8 @@ def detect_security_threats(login_events):
             []
         )
 
-
-        # =========================
         # RULE 1: BURST FAILURES
-        # =========================
-
+        
         burst_detected = False
 
         for i in range(len(ip_failed)):
@@ -274,16 +249,11 @@ def detect_security_threats(login_events):
                 ).total_seconds()
 
                 if difference <= BURST_TIME:
-
                     count += 1
-
                 else:
-
                     break
 
-
             if count >= BURST_LIMIT:
-
                 burst_detected = True
                 break
 
@@ -296,12 +266,8 @@ def detect_security_threats(login_events):
                 f"Burst failures: {BURST_LIMIT}+ failures "
                 f"within {BURST_TIME} seconds"
             )
-
-
-        # =========================
+        
         # RULE 2: PERSISTENT FAILURES
-        # =========================
-
         persistent_detected = False
 
         for i in range(len(ip_failed)):
@@ -323,34 +289,22 @@ def detect_security_threats(login_events):
                 ).total_seconds()
 
                 if difference <= PERSISTENT_TIME:
-
                     count += 1
-
                 else:
-
                     break
 
-
             if count >= PERSISTENT_LIMIT:
-
                 persistent_detected = True
                 break
 
 
         if persistent_detected:
-
             score += 2
-
             reasons.append(
                 f"Persistent failures: {PERSISTENT_LIMIT}+ "
                 f"failures within 15 minutes"
             )
-
-
-        # =========================
-        # RULE 3: MANY USERNAMES
-        # =========================
-
+        # RULE 3: MANY USERNAME
         usernames = set()
 
         for event in ip_failed:
@@ -372,9 +326,7 @@ def detect_security_threats(login_events):
             )
 
 
-        # =========================
         # RULE 4: INVALID USERS
-        # =========================
 
         invalid_count = 0
 
@@ -421,11 +373,7 @@ def detect_security_threats(login_events):
 
     return security_results
 
-
-# =========================
 # LIVE SECURITY DETECTION
-# =========================
-
 def build_threat_result(burst, persistent, user_count, invalid_count):
     # Same scoring, reasons and levels as detect_security_threats(),
     # but computed from running counters instead of full event lists.
@@ -482,220 +430,12 @@ def build_threat_result(burst, persistent, user_count, invalid_count):
         "reasons": reasons
     }
 
-
-class LiveSecurityTracker:
-    """
-    Incremental security detector for --live mode.
-
-    Only failed 'ssh_login' events are tracked. Session, sudo and
-    successful-login events are ignored, so they can never trigger
-    failure-based rules.
-    """
-
-    def __init__(self):
-
-        # ip -> deque of datetimes of recent failures (last 15 minutes)
-        self.recent_failures = defaultdict(deque)
-
-        # ip -> set of usernames tried (failed attempts only)
-        self.usernames = defaultdict(set)
-
-        # ip -> number of failed attempts using an invalid user
-        self.invalid_counts = defaultdict(int)
-
-        # ip -> sticky flags (once detected, stays detected, like batch mode)
-        self.burst_flag = defaultdict(bool)
-        self.persistent_flag = defaultdict(bool)
-
-        # ip -> last score that was reported (to avoid repeated alerts)
-        self.last_score = {}
-
-
-    def process(self, event):
-        """
-        Feed one event. Returns (ip, result_dict) when an IP's suspicion
-        score has increased, otherwise None.
-        """
-
-        if event.get("event_type") != "ssh_login":
-            return None
-
-        if event.get("status") != "failure":
-            return None
-
-        ip = event.get("ip")
-
-        if ip is None:
-            return None
-
-        try:
-            current_time = parse_timestamp(event["timestamp"])
-        except ValueError:
-            return None
-
-        window = self.recent_failures[ip]
-
-        # Log time jumped far backwards (e.g. Dec -> Jan rollover):
-        # old window is meaningless, start fresh.
-        if window and current_time < window[-1] - timedelta(hours=1):
-            window.clear()
-
-        window.append(current_time)
-
-        # Drop failures older than the persistent window
-        while (
-            window
-            and (current_time - window[0]).total_seconds() > PERSISTENT_TIME
-        ):
-            window.popleft()
-
-
-        # RULE 1: burst
-        if not self.burst_flag[ip]:
-
-            burst_count = 0
-
-            for failure_time in reversed(window):
-
-                difference = (current_time - failure_time).total_seconds()
-
-                if 0 <= difference <= BURST_TIME:
-                    burst_count += 1
-                else:
-                    break
-
-            if burst_count >= BURST_LIMIT:
-                self.burst_flag[ip] = True
-
-
-        # RULE 2: persistent
-        if not self.persistent_flag[ip]:
-
-            if len(window) >= PERSISTENT_LIMIT:
-                self.persistent_flag[ip] = True
-
-
-        # RULE 3: many usernames
-        if event.get("user") is not None:
-            self.usernames[ip].add(event["user"])
-
-
-        # RULE 4: invalid usernames
-        if event.get("invalid_user") is True:
-            self.invalid_counts[ip] += 1
-
-
-        result = build_threat_result(
-            self.burst_flag[ip],
-            self.persistent_flag[ip],
-            len(self.usernames[ip]),
-            self.invalid_counts[ip]
-        )
-
-        if result["score"] > 0 and result["score"] > self.last_score.get(ip, 0):
-
-            self.last_score[ip] = result["score"]
-
-            return ip, result
-
-        return None
-
-
-# LIVE MONITORING
-
-def monitor_live(file_path):
-
-    print("\n====== LIVE MONITORING ======")
-    print("Watching for new log entries...")
-    print("Press Ctrl+C to stop.\n", flush=True)
-
-    tracker = LiveSecurityTracker()
-
-    try:
-
-        with open(
-            file_path,
-            "r",
-            encoding="utf-8",
-            errors="replace"
-        ) as file:
-
-            # Start reading from the end of the file
-            file.seek(0, 2)
-
-            while True:
-
-                position = file.tell()
-
-                line = file.readline()
-
-                if not line:
-
-                    # File was truncated / rotated: start from the beginning
-                    if os.fstat(file.fileno()).st_size < position:
-                        file.seek(0)
-
-                    time.sleep(1)
-                    continue
-
-                # Incomplete line (writer still writing): wait and re-read
-                if not line.endswith("\n"):
-                    file.seek(position)
-                    time.sleep(0.5)
-                    continue
-
-                line = line.strip()
-
-                event = parse_line(line)
-
-                # Malformed / unknown lines are ignored
-                if event is None:
-                    continue
-
-                # Display every valid event
-                print(event, flush=True)
-
-                # Only ssh_login events go to security detection
-                if event["event_type"] == "ssh_login":
-
-                    alert = tracker.process(event)
-
-                    if alert is not None:
-
-                        ip, result = alert
-
-                        print("\n!!! SECURITY ALERT !!!")
-                        print("IP:", ip)
-                        print("Score:", result["score"])
-                        print("Level:", result["level"])
-                        print("Reasons:")
-
-                        for reason in result["reasons"]:
-                            print("-", reason)
-
-                        print(flush=True)
-
-    except FileNotFoundError:
-
-        print(f"Error: File '{file_path}' not found.")
-
-    except PermissionError:
-
-        print(f"Error: Permission denied for '{file_path}'.")
-
-    except KeyboardInterrupt:
-
-        print("\nLive monitoring stopped.")
-
-# =========================
 # EXPORT (JSON / CSV)
-# =========================
 
 CSV_FIELDS = [
     "timestamp", "ip", "user", "event_type", "status",
     "pid", "port", "invalid_user", "target_user", "command"
 ]
-
 
 def export_json(path, events, summary, security_results):
 
@@ -757,12 +497,6 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "--live",
-    action="store_true",
-    help="Monitor the log file for new entries in real time"
-)
-
-parser.add_argument(
     "--json",
     metavar="FILE",
     help="Export parsed events, summary and security report to a JSON file"
@@ -776,16 +510,8 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-
-# If live mode is requested, start monitoring
-if args.live:
-    monitor_live(args.file)
-    exit()
-
-
-# =========================
 # READ LOG FILE
-# =========================
+
 
 events = []
 
@@ -824,9 +550,7 @@ if len(events) == 0:
     print("Error: File is empty or contains no valid log entries.")
     exit()
 
-# =========================
 # SEPARATE EVENT TYPES
-# =========================
 
 for event in events:
 
@@ -844,20 +568,12 @@ for event in events:
     elif event["event_type"] == "sudo_command":
 
         sudo_events.append(event)
-
-
-# =========================
 # SUMMARY
-# =========================
-
 total_attempts = len(login_events)
-
 
 status_counts = Counter(
     event["status"]
-    for event in login_events
-)
-
+    for event in login_events)
 
 username_counts = Counter(
     event["user"]
@@ -942,9 +658,8 @@ else:
 
             print("-",reason)
 
-# =========================
 # EXPORT FILES
-# =========================
+
 
 summary = {
     "total_events": len(events),
@@ -971,7 +686,4 @@ try:
 except (PermissionError, OSError) as error:
 
     print(f"Error: Could not write export file: {error}")
-
-
-
-
+    
