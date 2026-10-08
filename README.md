@@ -10,7 +10,7 @@ rule no 4 = invalid user trying to login again nd again for the same ip address
 
 then added scores for each rule , so that score will decide suspicion level 
 
-live monitoring part and export is not that much clear to me but i will try to learn 
+export part is not that much clear to me but i will try to learn 
 
 
 for output just put this statement
